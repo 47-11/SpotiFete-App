@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View,Container,Item, Label, Input, Toast,Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner } from 'native-base';
+import { View,Container,Item, Label, Input, Toast,Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker } from 'native-base';
 import { Image } from 'react-native-elements';
 import { Linking } from 'react-native';
 import {fetchData} from '.././#Functions/FetchData';
@@ -11,6 +11,8 @@ interface CreateScreenState {
   loginRequired: boolean;
   loginUrl: string | undefined;
   sessionId: string | undefined;
+  joinName: string |undefined;
+  selDefaultPlaylist : string | undefined;
 }
 
 export class CreateScreen extends React.Component<CreateScreenProps,CreateScreenState> {
@@ -20,34 +22,44 @@ export class CreateScreen extends React.Component<CreateScreenProps,CreateScreen
     this.state = {
       loginRequired:true,
       loginUrl: undefined,
-      sessionId: undefined
+      sessionId: undefined,
+      joinName : undefined,
+      selDefaultPlaylist : "nolist"
     }
   }
   
   async componentDidMount(){
     try {
-      const authUrlResponse = await fetchData('/authurl/new');
+      const authUrlResponse = await fetchData('/spotify/auth/new');
       this.setState({loginUrl: authUrlResponse.url, sessionId: authUrlResponse.state});
     } catch (error) {
       console.log(error);
     }
-    setTimeout(() => this.checkLoginStatus(), 1000);
+    this.checkLoginStatus();
   }
 
   async checkLoginStatus(){
-    var loginInProcess = false;
-    if (loginInProcess){
-      setTimeout(() => this.checkLoginStatus(), 1000);
-    }else {
-      this.setState({loginRequired: false})
+    try {
+      const fetchResponse = await fetchData(`/spotify/auth/authenticated?sessionId=${encodeURIComponent(this.state.sessionId)}`);
+      var loginInProcess = fetchResponse.authenticated;
+      if (loginInProcess){
+        setTimeout(() => this.checkLoginStatus(), 1000);
+      }else {
+        this.setState({loginRequired: false});
+      }
+    } catch (e){
+      console.log(e);
     }
-    return false;
   }
-
+  onValueChange2(value: string) {
+    this.setState({
+      selDefaultPlaylist: value
+    });
+  }
 
   render() {
     const { onRequestClose } = this.props;
-    const {loginRequired,loginUrl} = this.state;
+    const {loginRequired,loginUrl,joinName,selDefaultPlaylist} = this.state;
     if (loginRequired){
       return (
         <Container>
@@ -102,6 +114,40 @@ export class CreateScreen extends React.Component<CreateScreenProps,CreateScreen
             </Right>
           </Header>
           <Content padder>
+            <View>
+              <H1>Your Party's Session</H1>
+              <Form style={{marginVertical:10}}>
+                <Item stackedLabel>
+                  <Icon active name='account-group-outline' type='MaterialCommunityIcons' />
+                  <Label>Name</Label>
+                  <Input
+                  onChangeText={joinName => this.setState({ joinName })}
+                  placeholder={"Name your party-session"}
+                  />
+                </Item>
+                <Item picker>
+                  <Icon active name='playlist-music' type='MaterialCommunityIcons' />
+                  <Label>Default Playlist</Label>
+                  <Picker
+                    mode="dropdown"
+                    iosIcon={<Icon name="arrow-down" type='MaterialCommunityIcons' />}
+                    style={{ width: undefined }}
+                    placeholderStyle={{ color: "#bfc6ea" }}
+                    placeholderIconColor="#007aff"
+                    selectedValue={selDefaultPlaylist}
+                    onValueChange={this.onValueChange2.bind(this)}
+                  >
+                  <Picker.Item label="Select a playlist" value="nolist" color="lightgrey"/>
+                  <Picker.Item label="Micheal Jackson" value="list1" />
+                  <Picker.Item label="Deutscher Rap" value="list2" />
+                  </Picker>
+                </Item>
+                <Button block={true} style={{marginVertical:10}} disabled={selDefaultPlaylist == "nolist" || !(joinName)}
+                onPress={() => {}}>
+                <Text>Let the party start</Text>
+              </Button>
+              </Form>
+            </View>
           </Content>
         </Container>
       );

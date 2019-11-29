@@ -58,7 +58,8 @@ export default class App extends React.Component<Props, State> {
               />
             </Right>
           </Header>
-          <Content padder>
+          <Content>
+            <View padder>
             <Form style={{marginVertical:10}}>
             <Text>To Join a Session type in the Session ID</Text>
               <Item floatingLabel>
@@ -77,6 +78,7 @@ export default class App extends React.Component<Props, State> {
             onPress={() => this.setState({createVisible: true})}>
               <Text>Start Session</Text>
             </Button>
+            </View>
           </Content>
         </Container>
         </Root> )
