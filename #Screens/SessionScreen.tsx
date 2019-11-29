@@ -4,7 +4,7 @@ import { View,Container, Header, Title, Subtitle, Content, Footer, FooterTab, Bu
 import { ScrollView } from 'react-native';
 
 interface SessionScreenProps {
-  sessionId: string;
+  joinId: string;
   onRequestClose(): void;
 }
 interface SessionScreenState {
@@ -30,7 +30,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps,Sessio
 
   render() {
     const {songAddingActive,searchText} = this.state;
-    const { sessionId, onRequestClose } = this.props;
+    const { joinId, onRequestClose } = this.props;
     const playlist: song[] = [{Title: "The way you make me feel", Interpret:"Michael Jackson", active:false},{Title: "They don't care about us", Interpret:"Michael Jackson", active:false},{Title:  "Thriller", Interpret:"Michael Jackson", active:false},{Title:  "Bad", Interpret:"Michael Jackson", active:false},{Title:  "Smooth Criminal", Interpret:"Michael Jackson", active: true},{Title:  "Billie Jean", Interpret:"Michael Jackson", active:false},];
     const searchResult: song[] = [];
     const sessionName: string = "Michael Jackson Party";

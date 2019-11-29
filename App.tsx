@@ -1,15 +1,16 @@
 import * as React from 'react';
-import {SessionScreen} from './Screens/SessionScreen';
-import {CreateScreen} from './Screens/CreateScreen';
+import {SessionScreen} from './#Screens/SessionScreen';
+import {CreateScreen} from './#Screens/CreateScreen';
+import {NoServerConnection} from './#Functions/NoServerConnection';
 import { Image } from 'react-native-elements';
-import { Container, Header, Title,Label, Content,Input,Form,Item, View, FooterTab, Button, Left, Right, Body, Icon, Text } from 'native-base';
+import { Container, Header, Title,Label, Content,Input,Form,Item, View, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Toast } from 'native-base';
 
 interface Props {}
 
 interface State {
   sessionVisible: boolean;
-  loginRequired: boolean;
-  sessionId: string;
+  createVisible: boolean;
+  joinId: string;
 }
 
 export default class App extends React.Component<Props, State> {
@@ -18,28 +19,33 @@ export default class App extends React.Component<Props, State> {
 
     this.state = {
       sessionVisible: false,
-      sessionId: "",
-      loginRequired: false
+      joinId: "",
+      createVisible: false
     }
   }
 
   render() {
     //return <AppContainer />;
 
-    const {sessionVisible,sessionId,loginRequired} = this.state;
+    const {sessionVisible,joinId,createVisible} = this.state;
 
     if (sessionVisible) {
-      return (<SessionScreen
-      sessionId={sessionId}
-                  onRequestClose={() => this.setState({sessionVisible: false, sessionId:""})}/>
+      return (
+        <Root><SessionScreen
+        joinId={joinId}
+                  onRequestClose={() => this.setState({sessionVisible: false, joinId:""})}/>
+        </Root>
       )
-    } else if (loginRequired){
-      return (<CreateScreen
-         onRequestClose={() => this.setState({loginRequired: false})}/>
-        )
+    } else if (createVisible){
+        return (
+        <Root><CreateScreen
+         onRequestClose={() => this.setState({createVisible: false})}/>
+         </Root>
+         )
     }
     else {
       return ( 
+        <Root>
         <Container>
           <Header>
             <Body>
@@ -58,23 +64,22 @@ export default class App extends React.Component<Props, State> {
               <Item floatingLabel>
                 <Label>Session ID</Label>
                 <Input
-                onChangeText={sessionId => this.setState({ sessionId })}
+                onChangeText={joinId => this.setState({ joinId })}
                 />
               </Item>
             </Form>
-              <Button block={true} style={{marginVertical:10}} disabled={sessionId == ""}
-              onPress={() => this.setState({sessionVisible: true})}>
+              <Button block={true} style={{marginVertical:10}} disabled={joinId == ""}
+              onPress={() => this.setState({sessionVisible: true})}
+                >
                 <Text>Join Session</Text>
               </Button>
             <Button block={true} style={{marginVertical:10}}
-            onPress={() => this.setState({loginRequired: true})}>
+            onPress={() => this.setState({createVisible: true})}>
               <Text>Start Session</Text>
             </Button>
-            {/* <Button block={true} onPress={() => this.setState({joinVisible: true})}>
-              <Text>Beitreten</Text>
-            </Button> */}
           </Content>
-        </Container>)
+        </Container>
+        </Root> )
     }
   }
 }
