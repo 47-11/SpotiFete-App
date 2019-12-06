@@ -30,18 +30,25 @@ export default class App extends React.Component<Props, State> {
     }
   }
   async componentDidMount(){
+    await this.checkUserLoginState();
+  }
+
+  async checkUserLoginState(){
     try {
       const sessionIdStored = await AsyncStorage.getItem('sessionId');
       console.log("stored value: " + sessionIdStored);
       if(sessionIdStored !== null){
-        if(checkLoginStatus(false, sessionIdStored)){
+        const authenticated = await checkLoginStatus( sessionIdStored, 0, 0);
+        if(authenticated){
           this.setState({loggedIn:true, sessionId:sessionIdStored});
+        } else{
+          this.setState({loggedIn:false});
         }
       }
     } catch (error) {
-      console.log("App didMount failed: " + error);
+      console.log("checkUserLoginState failed: " + error);
       noServerConnection();
-      setTimeout(() => this.componentDidMount(), 10000);
+      setTimeout(() => this.checkUserLoginState(), 10000);
     }
   }
   render() {
@@ -53,13 +60,13 @@ export default class App extends React.Component<Props, State> {
       return (
         <Root><SessionScreen
         joinId={joinId}
-                  onRequestClose={() => this.setState({sessionVisible: false, joinId:""})}/>
+                  onRequestClose={() => {this.setState({sessionVisible: false, joinId:""}); this.checkUserLoginState();}}/>
         </Root>
       )
     } else if (createVisible){
         return (
         <Root><CreateScreen
-         onRequestClose={() => this.setState({createVisible: false})}/>
+          onRequestClose={() => {this.setState({createVisible: false}); this.checkUserLoginState();}}/>
          </Root>
          )
     }
@@ -99,7 +106,7 @@ export default class App extends React.Component<Props, State> {
               </Button>
             </Form>
 
-            {loggedIn ? <AccountOptions sessionId="sessionIdStored"></AccountOptions> : <Text>You are currently not logged in.</Text>}
+            {loggedIn ? <AccountOptions sessionId={this.state.sessionId} onLogout={() => this.checkUserLoginState()}></AccountOptions> : <Text>You are currently not logged in.</Text>}
             </View>
           </Content>
         </Container>
