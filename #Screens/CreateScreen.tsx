@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { View,Container,Item, Label, Input, Toast,Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker } from 'native-base';
+import { View,Container,Item, Label, Input, Toast,Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker, H3 } from 'native-base';
 import { Image } from 'react-native-elements';
 import { Linking } from 'react-native';
-import {fetchData} from '.././#Functions/FetchData';
+import AsyncStorage  from '@react-native-community/async-storage';
+import {fetchFromBase,checkLoginStatus,noServerConnection} from '.././#Functions/FetchData';
 
 interface CreateScreenProps {
   onRequestClose(): void;
@@ -30,27 +31,30 @@ export class CreateScreen extends React.Component<CreateScreenProps,CreateScreen
   
   async componentDidMount(){
     try {
-      const authUrlResponse = await fetchData('/spotify/auth/new');
-      this.setState({loginUrl: authUrlResponse.url, sessionId: authUrlResponse.state});
+      const sessionIdStored = await AsyncStorage.getItem('sessionId');
+      console.log("stored value: " + sessionIdStored);
+      if(sessionIdStored !== null){
+        if(checkLoginStatus(false, sessionIdStored))
+        {
+          this.setState({sessionId: sessionIdStored});
+          this.setState({loginRequired:false});
+        }
+      }
+      if (!this.state.sessionId){
+        const authUrlResponse = await fetchFromBase('/spotify/auth/new');
+        this.setState({loginUrl: authUrlResponse.url, sessionId: authUrlResponse.sessionId});
+        console.log("value to store: " + authUrlResponse.sessionId);
+        await AsyncStorage.setItem('sessionId', authUrlResponse.sessionId);
+        const loggedIn =await checkLoginStatus(true,authUrlResponse.sessionId);
+        if(loggedIn) this.setState({loginRequired:false});
+      }
     } catch (error) {
       console.log(error);
+      noServerConnection();
+      setTimeout(() => this.componentDidMount(), 10000);
     }
-    this.checkLoginStatus();
   }
 
-  async checkLoginStatus(){
-    try {
-      const fetchResponse = await fetchData(`/spotify/auth/authenticated?sessionId=${encodeURIComponent(this.state.sessionId)}`);
-      var loginInProcess = fetchResponse.authenticated;
-      if (loginInProcess){
-        setTimeout(() => this.checkLoginStatus(), 1000);
-      }else {
-        this.setState({loginRequired: false});
-      }
-    } catch (e){
-      console.log(e);
-    }
-  }
   onValueChange2(value: string) {
     this.setState({
       selDefaultPlaylist: value
@@ -80,9 +84,9 @@ export class CreateScreen extends React.Component<CreateScreenProps,CreateScreen
             </Right>
           </Header>
           <Content padder>
-          <Text style={{marginHorizontal:10}}>
+          <H3 style={{marginHorizontal:10, textAlign:"center"}}>
                 To continue please login to your Spotify Account first.
-              </Text>
+              </H3>
             <Form  style={{marginVertical:10}}>
               <Button block={true} style={{marginVertical:10, backgroundColor:'black'}} disabled={!loginUrl}
                 onPress={() => {Linking.openURL(loginUrl)}}
