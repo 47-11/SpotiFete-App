@@ -59,12 +59,12 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
   }
 
   async searchSongs(query) {
-
-    var message = "";
+    this.setState({ searchResult: [] });
+    console.log("Seraching for songs query: " + query);
+    let message = "";
     if (query == "") {
       message = 'Type in something'
     }
-    console.log("Seraching for songs query: " + query);
     try {
       const curJoinId = this.props.joinId;
       const response: searchResponse = await fetchFromBase(`/spotify/search/track?session=${curJoinId}&query=${query}&limit=15`);
@@ -76,12 +76,11 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
       }
 
     } catch (error) {
-      console.log(error);
-      message = error;
+      console.log("searchSongs: " + error);
+      message = error.message;
     }
 
     if (message != "") {
-      this.setState({ searchResult: [] });
       Toast.show({
         text: message,
         buttonText: 'Okay',
@@ -110,10 +109,9 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
         curSession.currentlyPlaying.active = true;
         playlist.push(curSession.currentlyPlaying);
       }
-      if (curSession.upNext) playlist.push(curSession.upNext);
+      if (curSession.upNext && curSession.upNext.trackId !== "") playlist.push(curSession.upNext);
       if (curSession.queue) playlist = playlist.concat(curSession.queue);
     }
-    const sessionName: string = "Michael Jackson Party";
     if (songAddingActive) {
       return (
         <Container>
@@ -135,7 +133,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
           </Header>
           <View padder >
             <View >
-              <H1>{sessionName}</H1>
+              {/* <H1>{curSession ? curSession.title : ""}</H1> */}
               <Form>
                 <Item>
                   <Input
@@ -163,7 +161,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
                         <Text note numberOfLines={1}>{song.artistName}</Text>
                         <Text note numberOfLines={1} >{song.albumName}</Text>
                       </Body>
-                    </ListItem>
+                    </ListItem> 
                   })}
                 </List>
               </ScrollView>
@@ -196,7 +194,8 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
           </Header>
           <View padder >
             <View style={{ height: '15%' }}>
-              <H1>{sessionName}</H1>
+            <H1>{curSession ? curSession.title : ""}</H1>
+            <Text note>{curSession ? "by " + curSession.owner.spotifyDisplayName : ""}</Text>
               <View style={{ flexDirection: 'row' }}>
                 <Button style={{ marginVertical: 10, width: '45%' }} onPress={() => this.setState({ sharingVisible: true })}>
                   <Text>Share</Text>
