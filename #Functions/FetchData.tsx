@@ -12,7 +12,7 @@ export async function fetchFromBase(url){
         const responseJson = await response.json();
         return responseJson;
       } catch (error) {
-        console.log("fetchFromBase failed: " + error);
+        console.log("fetchFromBase failed for query - " + baseUrl + url + " - : " + error);
         noServerConnection();
       }
       
@@ -66,7 +66,7 @@ async function sleep(fn, ...args) {
 
 export function noServerConnection() {
   Toast.show({
-      text: 'No Server Connection retry in 10 sec',
+      text: 'Server-Error maybe no connection',
       buttonText: 'Okay',
       duration: 10000
     })

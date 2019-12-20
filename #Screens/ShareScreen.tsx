@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View,Container,Item, Label, Input, Toast,Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker, H3, List, ListItem } from 'native-base';
+import { View,Container,Item, Label, Input, Toast,Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker, H3, List, ListItem, H2 } from 'native-base';
 import { Image } from 'react-native-elements';
 import { Linking , Clipboard } from 'react-native';
 import AsyncStorage  from '@react-native-community/async-storage';
@@ -11,6 +11,7 @@ interface ShareScreenProps {
 }
 interface ShareScreenState {
   stringToCopy: string | undefined;
+  partyName: string | undefined;
 }
 
 export class ShareScreen extends React.Component<ShareScreenProps,ShareScreenState> {
@@ -18,7 +19,8 @@ export class ShareScreen extends React.Component<ShareScreenProps,ShareScreenSta
     super(props);
 
     this.state = {
-      stringToCopy : this.props.joinId
+      stringToCopy : this.props.joinId,
+      partyName : 'Micheal Jackson Party'
     }
   }
 
@@ -33,7 +35,7 @@ export class ShareScreen extends React.Component<ShareScreenProps,ShareScreenSta
 
   render() {
     const { onRequestClose } = this.props;
-    const {} = this.state;
+    const {partyName} = this.state;
     return (
     <Container>
         <Header>
@@ -43,7 +45,7 @@ export class ShareScreen extends React.Component<ShareScreenProps,ShareScreenSta
         </Button>
         </Left> 
         <Body>
-        <Title>Share your Party</Title>
+        <Title>Share your Session</Title>
         </Body>
         <Right>
             <Image 
@@ -53,8 +55,11 @@ export class ShareScreen extends React.Component<ShareScreenProps,ShareScreenSta
         </Right>
         </Header>
         <Content padder>
+          {partyName ? <H2 style={{margin:10, textAlign:"center"}}>
+            {partyName}
+          </H2> : <Text>No name Session</Text>}
           <H3 style={{marginHorizontal:10, textAlign:"center"}}>
-            Share your Party Id!
+            Share your Sessions Id!
           </H3>
           <List style={{marginVertical: 20}}>
             <ListItem icon style={{borderWidth:1, borderColor: '#8600b3', paddingLeft:10}}>

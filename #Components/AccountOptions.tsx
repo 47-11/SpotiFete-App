@@ -1,6 +1,7 @@
 import React from "react";
 import { View, H3, Button, Text } from "native-base";
 import { fetchFromBaseWithBody, fetchFromBase } from "../#Functions/FetchData";
+import AsyncStorage from "@react-native-community/async-storage";
 
 
 interface propsAccount {
@@ -19,10 +20,11 @@ export class AccountOptions extends React.PureComponent<propsAccount,stateAccoun
             username : undefined
         }
     }
-    logoutUser(){
+    async logoutUser(){
         try {
             console.log("logoutUser Id: " +  this.props.sessionId);
-            fetchFromBaseWithBody('/spotify/auth/invalidate', 'PATCH',{sessionId : this.props.sessionId});
+            await fetchFromBaseWithBody('/spotify/auth/invalidate', 'PATCH',{sessionId : this.props.sessionId});
+            await AsyncStorage.removeItem('sessionId');
             this.props.onLogout();
         } catch(error) {
             console.log("logoutUser failed: " + error);
@@ -43,7 +45,7 @@ export class AccountOptions extends React.PureComponent<propsAccount,stateAccoun
         return (
         <View padder style= {{borderColor:"#99ff99",backgroundColor:"black", borderWidth: 2, marginTop:50}}>
     <Text style={{color: "#99ff99"}}>You are currently logged in as {username ? username : 'unknown Username'}</Text>
-            <Button block={true} onPress={() => this.logoutUser()} style={{marginVertical:10,borderColor:"#99ff99",backgroundColor:"black", borderWidth: 2}}>
+            <Button block={true} onPress={() =>  this.logoutUser()} style={{marginVertical:10,borderColor:"#99ff99",backgroundColor:"black", borderWidth: 2}}>
                 <Text style={{color: "#99ff99"}}>Logout</Text>
             </Button>
         </View>
