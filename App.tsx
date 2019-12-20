@@ -45,6 +45,13 @@ export default class App extends React.Component<Props, State> {
     console.log( "Url: " + url);
     const route = url.replace(/.*?:\/\//g, '');
     console.log("Route:" + route);
+    const sessionRoute = route.indexOf( "session/" );
+    if(sessionRoute >= 0){
+
+      const joinId = route.replace("session/", "" );
+      console.log("joinId:" + joinId);
+      this.checkJoinId(joinId);
+    }
     // do something with the url, in our case navigate(route)
   }
 
