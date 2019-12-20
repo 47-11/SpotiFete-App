@@ -52,7 +52,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
     console.log("Seraching for songs query: " + query);
     try {
       const curJoinId = this.props.joinId;
-      const response: searchResponse  = await fetchFromBase(`/spotify/search/track?session={curJoinId}&query=${query}&limit=15`);
+      const response: searchResponse  = await fetchFromBase(`/spotify/search/track?session=${curJoinId}&query=${query}&limit=15`);
       //(`spotify/search/track?session=${joinId}&query=${query}`);
       if (response.query == query && response.results && message == "") {
         this.setState({ searchResult: response.results });
@@ -176,7 +176,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
             <View style={{ height: '15%' }}>
               <H1>{sessionName}</H1>
               <View style={{ flexDirection: 'row' }}>
-                <Button style={{ marginVertical: 10, width: '45%' }}>
+                <Button style={{ marginVertical: 10, width: '45%' }} onPress={() => this.setState({sharingVisible:true})}>
                   <Text>Share</Text>
                   <Icon name='share' type='MaterialCommunityIcons'></Icon>
                 </Button>

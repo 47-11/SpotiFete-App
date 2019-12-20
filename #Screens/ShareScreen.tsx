@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { View,Container,Item, Label, Input, Toast,Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker, H3, List, ListItem, H2 } from 'native-base';
+import { View, Container, Item, Label, Input, Toast, Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker, H3, List, ListItem, H2 } from 'native-base';
 import { Image } from 'react-native-elements';
-import { Linking , Clipboard } from 'react-native';
-import AsyncStorage  from '@react-native-community/async-storage';
-import {fetchFromBase,checkLoginStatus,noServerConnection} from '.././#Functions/FetchData';
+import { Linking, Clipboard } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 
 interface ShareScreenProps {
   onRequestClose(): void;
@@ -14,17 +13,17 @@ interface ShareScreenState {
   partyName: string | undefined;
 }
 
-export class ShareScreen extends React.Component<ShareScreenProps,ShareScreenState> {
-  constructor (props:ShareScreenProps) {
+export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenState> {
+  constructor(props: ShareScreenProps) {
     super(props);
 
     this.state = {
-      stringToCopy : this.props.joinId,
-      partyName : 'Micheal Jackson Party'
+      stringToCopy: this.props.joinId,
+      partyName: 'Micheal Jackson Party'
     }
   }
 
-  async writeToClipboard () {
+  async writeToClipboard() {
     await Clipboard.setString(this.state.stringToCopy);
     Toast.show({
       text: 'Copied to Clipboard!',
@@ -34,47 +33,54 @@ export class ShareScreen extends React.Component<ShareScreenProps,ShareScreenSta
   }
 
   render() {
-    const { onRequestClose } = this.props;
-    const {partyName} = this.state;
+    const { onRequestClose, joinId } = this.props;
+    const { partyName } = this.state;
+    const link = `spotifete:\\\\fete\\${joinId}`;
     return (
-    <Container>
+      <Container>
         <Header>
-        <Left> 
-        <Button transparent={true} onPress={() => onRequestClose()}>
-            <Icon name='arrow-left' type='MaterialCommunityIcons'/>
-        </Button>
-        </Left> 
-        <Body>
-        <Title>Share your Session</Title>
-        </Body>
-        <Right>
-            <Image 
-            source={require('../SpotiFeteLogo.png')}
-            style={{ width: 50, height: 50 }}
+          <Left>
+            <Button transparent={true} onPress={() => onRequestClose()}>
+              <Icon name='arrow-left' type='MaterialCommunityIcons' />
+            </Button>
+          </Left>
+          <Body>
+            <Title>Share your Session</Title>
+          </Body>
+          <Right>
+            <Image
+              source={require('../SpotiFeteLogo.png')}
+              style={{ width: 50, height: 50 }}
             />
-        </Right>
+          </Right>
         </Header>
         <Content padder>
-          {partyName ? <H2 style={{margin:10, textAlign:"center"}}>
+          {partyName ? <H2 style={{ margin: 10, textAlign: "center" }}>
             {partyName}
           </H2> : <Text>No name Session</Text>}
-          <H3 style={{marginHorizontal:10, textAlign:"center"}}>
-            Share your Sessions Id!
+          <H3 style={{ marginHorizontal: 10, textAlign: "center" }}>
+            Share your Session Id!
           </H3>
-          <List style={{marginVertical: 20}}>
-            <ListItem icon style={{borderWidth:1, borderColor: '#8600b3', paddingLeft:10}}>
-              <Left><Text style={{  padding: 10}}>Id:</Text></Left>
-            <Body>
-              <Text style={{backgroundColor: "#8600b3", padding:9, color: 'lightgrey'}}>{this.props.joinId}</Text>
-            </Body>
-            <Right>
-              <Icon style={{ color: "#8600b3"}} name='clipboard-text' type='MaterialCommunityIcons' onPress={() => {this.writeToClipboard()}}/>
-            </Right>
+          <View style={{alignItems:'center',padding:10, borderWidth:2, margin:5}}>
+            <QRCode
+              value={link}
+              size={300}
+            />
+          </View>
+          <List style={{ marginVertical: 20 }}>
+            <ListItem icon style={{ borderWidth: 1, borderColor: '#8600b3', paddingLeft: 10 }}>
+              <Left><Text style={{ padding: 10 }}>Id:</Text></Left>
+              <Body>
+                <Text style={{ backgroundColor: "#8600b3", padding: 9, color: 'lightgrey' }}>{joinId}</Text>
+              </Body>
+              <Right>
+                <Icon style={{ color: "#8600b3" }} name='clipboard-text' type='MaterialCommunityIcons' onPress={() => { this.writeToClipboard() }} />
+              </Right>
             </ListItem>
           </List>
         </Content>
-    </Container>
+      </Container>
     );
-   
+
   }
 }

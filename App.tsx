@@ -6,6 +6,7 @@ import { Image } from 'react-native-elements';
 import { Container, Header, Title, Label, Content, Input, Form, Item, View, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Toast, H3 } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 import { checkLoginStatus, noServerConnection, fetchFromBaseWithBody, fetchFromBase } from './#Functions/FetchData';
+import { Linking } from 'react-native';
 
 interface Props { }
 
@@ -31,6 +32,20 @@ export default class App extends React.Component<Props, State> {
   }
   async componentDidMount() {
     await this.checkUserLoginState();
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        this.handleOpenURL(url);
+      }
+    }).catch(err => {
+        console.warn('An error occurred', err);
+    });
+  }
+
+  handleOpenURL(url) {
+    console.log( "Url: " + url);
+    const route = url.replace(/.*?:\/\//g, '');
+    console.log("Route:" + route);
+    // do something with the url, in our case navigate(route)
   }
 
   async checkUserLoginState() {
