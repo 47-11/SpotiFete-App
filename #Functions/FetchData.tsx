@@ -7,22 +7,28 @@ export function getBaseUrl (){
 
 export async function fetchFromBase(url){
       const baseUrl = getBaseUrl();
-      try {
-        const response = await fetch(baseUrl + url);
-        const responseJson = await response.json();
-        return responseJson;
+      let response;
+      try{
+        response = await fetch(baseUrl + url);
       } catch (error) {
         console.log("fetchFromBase failed for query - " + baseUrl + url + " - : " + error);
         noServerConnection();
+        return;
       }
-      
-    return null;
+      const responseStatus = response.status;
+      const responseJson = await response.json();
+      if(responseStatus  >= 200 && responseStatus < 300){
+        return responseJson;
+      } else {
+        throw new Error (responseJson.message);
+      }
 }
 
 export async function fetchFromBaseWithBody (url, method, bodyParams){
   const baseUrl = getBaseUrl();
+  let response;
   try {
-    fetch(baseUrl + url, {
+    response = await fetch(baseUrl + url, {
       method: method,
       headers: {
         Accept: 'application/json',
@@ -33,7 +39,14 @@ export async function fetchFromBaseWithBody (url, method, bodyParams){
   }catch (error) {
     console.log("fetchFromBaseWithBody failed: " + error);
     noServerConnection();
+    return;
   }
+  const responseStatus = response.status;
+  if(responseStatus  >= 200 && responseStatus < 300){
+    const responseJson = await  response.json();
+    throw new Error (responseJson.message);
+  }
+  
 }
 export async function checkLoginStatus( sessionId, tryout, maxTrys){
   try {
@@ -56,7 +69,7 @@ export async function checkLoginStatus( sessionId, tryout, maxTrys){
   }
 }
 
-function timeout(ms) {
+export function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function sleep(fn, ...args) {

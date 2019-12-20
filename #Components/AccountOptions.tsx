@@ -2,6 +2,7 @@ import React from "react";
 import { View, H3, Button, Text } from "native-base";
 import { fetchFromBaseWithBody, fetchFromBase } from "../#Functions/FetchData";
 import AsyncStorage from "@react-native-community/async-storage";
+import { spotifyUser } from "./responseInterfaces";
 
 
 interface propsAccount {
@@ -32,7 +33,7 @@ export class AccountOptions extends React.PureComponent<propsAccount,stateAccoun
     } 
     async componentDidMount(){
         try {
-            const userResponse = await fetchFromBase('/users/current?sessionId='+ this.props.sessionId);
+            const userResponse : spotifyUser = await fetchFromBase('/users/current?sessionId='+ this.props.sessionId);
             const spotifyDisplayName = userResponse.spotifyDisplayName;
             if (spotifyDisplayName) this.setState({username : spotifyDisplayName});
             console.log("getting Username Response: " + spotifyDisplayName); 

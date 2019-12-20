@@ -37,18 +37,18 @@ export default class App extends React.Component<Props, State> {
         this.handleOpenURL(url);
       }
     }).catch(err => {
-        console.warn('An error occurred', err);
+      console.warn('An error occurred', err);
     });
   }
 
   handleOpenURL(url) {
-    console.log( "Url: " + url);
+    console.log("Url: " + url);
     const route = url.replace(/.*?:\/\//g, '');
     console.log("Route:" + route);
-    const sessionRoute = route.indexOf( "session/" );
-    if(sessionRoute >= 0){
+    const sessionRoute = route.indexOf("session/");
+    if (sessionRoute >= 0) {
 
-      const joinId = route.replace("session/", "" );
+      const joinId = route.replace("session/", "");
       console.log("joinId:" + joinId);
       this.checkJoinId(joinId);
     }
@@ -74,11 +74,11 @@ export default class App extends React.Component<Props, State> {
     }
   }
 
-  async checkJoinId(joinId){
+  async checkJoinId(joinId) {
     try {
       const sessionResponse = await fetchFromBase(`/sessions/${joinId}`);
-      if(sessionResponse.active){
-        this.setState({sessionVisible: true});
+      if (sessionResponse.joinId == joinId) {
+        this.setState({ sessionVisible: true });
         return true;
       }
     } catch (error) {
@@ -141,7 +141,7 @@ export default class App extends React.Component<Props, State> {
                     />
                   </Item>
                   <Button block={true} style={{ marginVertical: 10 }} disabled={joinId == ""}
-                    onPress={() => {this.checkJoinId(joinId)}}
+                    onPress={() => { this.checkJoinId(joinId) }}
                   >
                     <Text>Join Session</Text>
                   </Button>
