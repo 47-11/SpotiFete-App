@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { checkLoginStatus, noServerConnection, fetchFromBaseWithBody, fetchFromBase } from './#Functions/FetchData';
 import { Linking } from 'react-native';
 
+
 interface Props { }
 
 interface State {
@@ -55,6 +56,14 @@ export default class App extends React.Component<Props, State> {
     // do something with the url, in our case navigate(route)
   }
 
+  joinIdChange(newjoinId){
+    newjoinId = newjoinId.replace( /\D/g, '');
+    if (newjoinId.length > 4){
+      newjoinId = newjoinId.substring(0,4) + " - " + newjoinId.substring(4);
+    }
+    this.setState({ joinId: newjoinId });
+  }
+
   async checkUserLoginState() {
     try {
       const sessionIdStored = await AsyncStorage.getItem('sessionId');
@@ -78,7 +87,7 @@ export default class App extends React.Component<Props, State> {
     try {
       const sessionResponse = await fetchFromBase(`/sessions/${joinId}`);
       if (sessionResponse.joinId == joinId) {
-        this.setState({ sessionVisible: true });
+        this.setState({ sessionVisible: true, joinId: joinId });
         return true;
       }
     } catch (error) {
@@ -94,16 +103,14 @@ export default class App extends React.Component<Props, State> {
   }
   render() {
     //return <AppContainer />;
-
     const { sessionVisible, joinId, createVisible, loggedIn } = this.state;
-
     if (sessionVisible) {
       return (
         <Root>
           <SessionScreen
             joinId={joinId}
             onRequestClose={() => { this.setState({ sessionVisible: false, joinId: "" }); this.checkUserLoginState(); }}
-            adminMode={false} />
+            adminMode={true} />
         </Root>
       )
     } else if (createVisible) {
@@ -137,11 +144,17 @@ export default class App extends React.Component<Props, State> {
                   <Item floatingLabel>
                     <Label>Session ID</Label>
                     <Input
-                      onChangeText={joinId => this.setState({ joinId })}
+                      onChangeText={joinId => {this.joinIdChange(joinId)}}
+                      keyboardType={"number-pad"}
+                      onSubmitEditing={() => { this.checkJoinId(joinId.replace( /\D/g, ''))}}
+                      returnKeyType={"send"}
+                      value={this.state.joinId}
+                      maxLength={11}
                     />
+
                   </Item>
                   <Button block={true} style={{ marginVertical: 10 }} disabled={joinId == ""}
-                    onPress={() => { this.checkJoinId(joinId) }}
+                    onPress={() => { this.checkJoinId(joinId.replace( /\D/g, ''))}}
                   >
                     <Text>Join Session</Text>
                   </Button>

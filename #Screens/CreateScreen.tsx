@@ -19,7 +19,6 @@ interface CreateScreenState {
   joinName: string | undefined;
   selDefaultPlaylist: string | undefined;
   sessionVisible: boolean;
-  editMode: boolean;
 }
 
 export class CreateScreen extends React.Component<CreateScreenProps, CreateScreenState> {
@@ -32,8 +31,7 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
       sessionId: undefined,
       joinName: undefined,
       selDefaultPlaylist: "nolist",
-      sessionVisible: false,
-      editMode: false
+      sessionVisible: false
     }
   }
 
@@ -88,7 +86,7 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
   }
 
   render() {
-    const { onRequestClose } = this.props;
+    const { onRequestClose,joinId } = this.props;
     const { loginRequired, loginUrl, joinName, selDefaultPlaylist, sessionVisible } = this.state;
     if (loginRequired) {
       return (
@@ -125,7 +123,7 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
         </Container>
       );
     } else if (sessionVisible) {
-      return (<SessionScreen adminMode={true} onRequestClose={() => { this.setState({ sessionVisible: false, editMode: true }); this.checkUserLoginStatus(); }} joinId="123450"></SessionScreen>);
+      return (<SessionScreen adminMode={true} onRequestClose={() => { this.setState({ sessionVisible: false }); this.checkUserLoginStatus(); }} joinId="123450"></SessionScreen>);
     }
     else {
       return (
@@ -159,7 +157,7 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
                     value={joinName}
                   />
                 </Item>
-                <Item picker>
+                {/* <Item picker>
                   <Icon active name='playlist-music' type='MaterialCommunityIcons' />
                   <Label>Default Playlist</Label>
                   <Picker
@@ -175,22 +173,14 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
                     <Picker.Item label="Micheal Jackson" value="list1" />
                     <Picker.Item label="Deutscher Rap" value="list2" />
                   </Picker>
-                </Item>
-                <Button block={true} style={{ marginVertical: 10 }} disabled={selDefaultPlaylist == "nolist" || !(joinName)}
+                </Item> */}
+                <Button block={true} style={{ marginVertical: 10 }} disabled={!(joinName)}
                   onPress={() => {
                     this.createSession();
                     this.setState({ sessionVisible: true });
                   }}>
-                  <Text>Let the Session start</Text>
+                  {joinId ? <Text>Let the Session start</Text> : <Text>Apply the changes</Text>}
                 </Button>
-                {/* <Button block={true} style={{ marginVertical: 10 }} disabled={selDefaultPlaylist == "nolist" || !(joinName)}
-                  onPress={() => {
-                    this.createSession();
-                    this.setState({ sessionVisible: true });
-                  }}
-                >
-                  <Text>Let the Session start</Text>
-                </Button> */}
               </Form>
               <AccountOptions sessionId={this.state.sessionId} onLogout={() => {this.setState({ loginRequired: true,loginUrl: undefined }); this.checkUserLoginStatus();}}></AccountOptions>
             </View>

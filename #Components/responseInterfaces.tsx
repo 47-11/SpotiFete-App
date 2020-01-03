@@ -20,6 +20,8 @@ export interface session {
     currentlyPlaying: song | undefined;
     upNext: song | undefined;
     queue: song[] | undefined;
+    queueLastUpdated: Date;
+    spotifyPlaylist: string;
 }
 
 export interface spotifyUser {

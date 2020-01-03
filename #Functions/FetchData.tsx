@@ -5,7 +5,7 @@ export function getBaseUrl (){
   return baseUrl;
 }
 
-export async function fetchFromBase(url){
+export async function fetchFromBase(url,expectedResponses){
       const baseUrl = getBaseUrl();
       let response;
       try{
@@ -16,8 +16,9 @@ export async function fetchFromBase(url){
         return;
       }
       const responseStatus = response.status;
+      console.log(responseStatus);
       const responseJson = await response.json();
-      if(responseStatus  >= 200 && responseStatus < 300){
+      if(responseStatus  >= 200 && responseStatus < 300 || expectedResponses.indexOf(responseStatus) != -1){
         return responseJson;
       } else {
         throw new Error (responseJson.message);
@@ -42,16 +43,22 @@ export async function fetchFromBaseWithBody (url, method, bodyParams){
     return;
   }
   const responseStatus = response.status;
-  if(responseStatus  >= 200 && responseStatus < 300){
+  console.log(responseStatus);
+  if(responseStatus  >= 200 && responseStatus < 300 && responseStatus != 204){
+    //const responseJson = await  response.json();
+    //return responseJson;
+  }else if (responseStatus == 204){
+    return undefined;
+  }else {
     const responseJson = await  response.json();
     throw new Error (responseJson.message);
   }
-  
 }
 export async function checkLoginStatus( sessionId, tryout, maxTrys){
   try {
     console.log("checkLoginStatus already checked " + tryout + "times");
-    const fetchResponse = await fetchFromBase(`/spotify/auth/authenticated?sessionId=${encodeURIComponent(sessionId)}`);
+    console.log(`/spotify/auth/authenticated?sessionId=${encodeURIComponent(sessionId)}`);
+    const fetchResponse = await fetchFromBase(`/spotify/auth/authenticated?sessionId=${encodeURIComponent(sessionId)}`,[401]);
     var authenticated = fetchResponse.authenticated;
     if (!authenticated && tryout < maxTrys){
       console.log("checkLoginStatus: not authenticated" );
