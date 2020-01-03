@@ -49,11 +49,11 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
   async fetchSessionDetails() {
     const curJoinId = this.props.joinId;
     try {
-      const lastUpdate = await fetchFromBase(`/sessions/${curJoinId}/queuelastupdated`);
+      const lastUpdate = await fetchFromBase(`/sessions/${curJoinId}/queuelastupdated`,[200]);
       if (!this.state.curSession || (this.state.curSession && lastUpdate && this.state.curSession.queueLastUpdated !== lastUpdate.queueLastUpdated)){
         console.log("Fetch Session details");
 
-        const sessionResponse: session = await fetchFromBase(`/sessions/${curJoinId}`);
+        const sessionResponse: session = await fetchFromBase(`/sessions/${curJoinId}`,[200]);
         if (sessionResponse) {
           this.setState({ curSession: sessionResponse })
         }
@@ -77,7 +77,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
     try {
       const curJoinId = this.props.joinId;
       
-      const response: searchResponse = await fetchFromBase(`/spotify/search/track?session=${curJoinId}&query=${encodeURIComponent(query)}&limit=15`);
+      const response: searchResponse = await fetchFromBase(`/spotify/search/track?session=${curJoinId}&query=${encodeURIComponent(query)}&limit=15`,[200]);
       //(`spotify/search/track?session=${joinId}&query=${query}`);
       if (response.query == query && response.results && message == "") {
         this.setState({ searchResult: response.results });
@@ -238,7 +238,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
                   <Text>Share</Text>
                   <Icon name='share' type='MaterialCommunityIcons'></Icon>
                 </Button>
-                {
+                {/* {
                   adminMode ?
                     <Button style={{ marginVertical: 10, width: '45%', marginHorizontal: '5%' }}
                       onPress={() => this.setState({editVisible: true})}
@@ -247,7 +247,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
                       <Icon name='square-edit-outline' type='MaterialCommunityIcons'></Icon>
                     </Button>
                     : <React.Fragment></React.Fragment>
-                }
+                } */}
               </View>
             </View>
             <ScrollView style={{ borderStyle: "solid", borderColor: 'blue', borderWidth: 2, height: '60%' , marginTop:5, padding:5}}>

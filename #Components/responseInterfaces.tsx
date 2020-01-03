@@ -24,7 +24,13 @@ export interface session {
     spotifyPlaylist: string;
 }
 
+export interface userDetails {
+    spotifyUser: string;
+    spotifyDisplayName: string;
+    listeningSessions: session[];
+}
+
 export interface spotifyUser {
     spotifyUser: string;
-    spotifyDisplayName: string
+    spotifyDisplayName: string;
 }

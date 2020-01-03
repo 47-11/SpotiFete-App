@@ -13,6 +13,7 @@ interface Props { }
 
 interface State {
   sessionVisible: boolean;
+  sessionVisibleAdmin: boolean;
   createVisible: boolean;
   joinId: string;
   loggedIn: boolean;
@@ -25,6 +26,7 @@ export default class App extends React.Component<Props, State> {
 
     this.state = {
       sessionVisible: false,
+      sessionVisibleAdmin: false,
       joinId: "",
       createVisible: false,
       loggedIn: false,
@@ -85,7 +87,7 @@ export default class App extends React.Component<Props, State> {
 
   async checkJoinId(joinId) {
     try {
-      const sessionResponse = await fetchFromBase(`/sessions/${joinId}`);
+      const sessionResponse = await fetchFromBase(`/sessions/${joinId}`,[200]);
       if (sessionResponse.joinId == joinId) {
         this.setState({ sessionVisible: true, joinId: joinId });
         return true;
@@ -103,16 +105,23 @@ export default class App extends React.Component<Props, State> {
   }
   render() {
     //return <AppContainer />;
-    const { sessionVisible, joinId, createVisible, loggedIn } = this.state;
+    const { sessionVisible, joinId, createVisible, loggedIn,sessionVisibleAdmin } = this.state;
     if (sessionVisible) {
       return (
         <Root>
           <SessionScreen
             joinId={joinId}
             onRequestClose={() => { this.setState({ sessionVisible: false, joinId: "" }); this.checkUserLoginState(); }}
-            adminMode={true} />
+            adminMode={false} />
         </Root>
       )
+    }else if(sessionVisibleAdmin){
+      <Root>
+          <SessionScreen
+            joinId={joinId}
+            onRequestClose={() => { this.setState({ sessionVisibleAdmin: false, joinId: "" }); this.checkUserLoginState(); }}
+            adminMode={true} />
+        </Root>
     } else if (createVisible) {
       return (
         <Root><CreateScreen
@@ -164,7 +173,7 @@ export default class App extends React.Component<Props, State> {
                   </Button>
                 </Form>
 
-                {loggedIn ? <AccountOptions sessionId={this.state.sessionId} onLogout={() => this.checkUserLoginState()}></AccountOptions> : <Text>You are currently not logged in.</Text>}
+                {loggedIn ? <AccountOptions onOpenSession={(joinId) => {this.setState({joinId:joinId, sessionVisibleAdmin: true})}} sessionId={this.state.sessionId} onLogout={() => this.checkUserLoginState()}></AccountOptions> : <Text>You are currently not logged in.</Text>}
               </View>
             </Content>
           </Container>

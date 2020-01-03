@@ -3,10 +3,11 @@ import { View, Container, Item, Label, Input, Toast, Header, Title, Form, Conten
 import { Image } from 'react-native-elements';
 import { Linking } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import { fetchFromBase, checkLoginStatus, noServerConnection } from '.././#Functions/FetchData';
+import { fetchFromBase, checkLoginStatus, noServerConnection, fetchFromBaseWithBody } from '.././#Functions/FetchData';
 import { ShareScreen } from './ShareScreen';
 import { AccountOptions } from '.././#Components/AccountOptions';
 import { SessionScreen } from './SessionScreen';
+import { session } from '../#Components/responseInterfaces';
 
 interface CreateScreenProps {
   onRequestClose(): void;
@@ -17,8 +18,8 @@ interface CreateScreenState {
   loginUrl: string | undefined;
   sessionId: string | undefined;
   joinName: string | undefined;
-  selDefaultPlaylist: string | undefined;
   sessionVisible: boolean;
+  newJoinId: string | undefined;
 }
 
 export class CreateScreen extends React.Component<CreateScreenProps, CreateScreenState> {
@@ -30,8 +31,8 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
       loginUrl: undefined,
       sessionId: undefined,
       joinName: undefined,
-      selDefaultPlaylist: "nolist",
-      sessionVisible: false
+      sessionVisible: false,
+      newJoinId: undefined
     }
   }
 
@@ -62,7 +63,7 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
 
   async getNewAuth(){
     try {
-      const authUrlResponse = await fetchFromBase('/spotify/auth/new');
+      const authUrlResponse = await fetchFromBase('/spotify/auth/new',[200]);
       this.setState({ loginUrl: authUrlResponse.url, sessionId: authUrlResponse.sessionId });
       console.log("value to store: " + authUrlResponse.sessionId);
       await AsyncStorage.setItem('sessionId', authUrlResponse.sessionId);
@@ -76,18 +77,18 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
   }
 
   async createSession() {
-    return;
-  }
-
-  onValueChange2(value: string) {
-    this.setState({
-      selDefaultPlaylist: value
-    });
+    try{
+      const createResponse :session = await fetchFromBaseWithBody(`/sessions`,'POST',{loginSessionId: this.state.sessionId, listeningSessionTitle: this.state.joinName});
+      const joinId = createResponse.joinId;
+      this.setState({ sessionVisible: true, newJoinId:joinId });
+    } catch (error){
+      console.log("CreateSession ERROR: " + error);
+    }
   }
 
   render() {
     const { onRequestClose,joinId } = this.props;
-    const { loginRequired, loginUrl, joinName, selDefaultPlaylist, sessionVisible } = this.state;
+    const { loginRequired, loginUrl, joinName, sessionVisible ,newJoinId} = this.state;
     if (loginRequired) {
       return (
         <Container>
@@ -123,7 +124,7 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
         </Container>
       );
     } else if (sessionVisible) {
-      return (<SessionScreen adminMode={true} onRequestClose={() => { this.setState({ sessionVisible: false }); this.checkUserLoginStatus(); }} joinId="123450"></SessionScreen>);
+      return (<SessionScreen adminMode={true} onRequestClose={() => { this.setState({ sessionVisible: false }); this.checkUserLoginStatus(); }} joinId={newJoinId}></SessionScreen>);
     }
     else {
       return (
@@ -157,32 +158,14 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
                     value={joinName}
                   />
                 </Item>
-                {/* <Item picker>
-                  <Icon active name='playlist-music' type='MaterialCommunityIcons' />
-                  <Label>Default Playlist</Label>
-                  <Picker
-                    mode="dropdown"
-                    iosIcon={<Icon name="arrow-down" type='MaterialCommunityIcons' />}
-                    style={{ width: undefined }}
-                    placeholderStyle={{ color: "#bfc6ea" }}
-                    placeholderIconColor="#007aff"
-                    selectedValue={selDefaultPlaylist}
-                    onValueChange={this.onValueChange2.bind(this)}
-                  >
-                    <Picker.Item label="Select a playlist" value="nolist" color="lightgrey" />
-                    <Picker.Item label="Micheal Jackson" value="list1" />
-                    <Picker.Item label="Deutscher Rap" value="list2" />
-                  </Picker>
-                </Item> */}
                 <Button block={true} style={{ marginVertical: 10 }} disabled={!(joinName)}
                   onPress={() => {
                     this.createSession();
-                    this.setState({ sessionVisible: true });
                   }}>
-                  {joinId ? <Text>Let the Session start</Text> : <Text>Apply the changes</Text>}
+                  {joinId ? <Text>Apply the changes</Text> : <Text>Let the Session start</Text> }
                 </Button>
               </Form>
-              <AccountOptions sessionId={this.state.sessionId} onLogout={() => {this.setState({ loginRequired: true,loginUrl: undefined }); this.checkUserLoginStatus();}}></AccountOptions>
+              <AccountOptions sessionId={this.state.sessionId} onOpenSession={(joinId) =>{ this.setState({ sessionVisible: true, newJoinId: joinId });}} onLogout={() => {this.setState({ loginRequired: true,loginUrl: undefined }); this.checkUserLoginStatus();}}></AccountOptions>
             </View>
           </Content>
         </Container>
