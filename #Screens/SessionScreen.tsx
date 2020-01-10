@@ -178,7 +178,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
                   
                 </Item>
               </Form>
-              <ScrollView style={{ borderStyle: "solid", borderColor: 'blue', borderWidth: 2, height: '80%' }}>
+              <ScrollView>
                 <List >
                   {searchResult.map((song, index) => {
                     return <ListItem style={{ marginVertical: 3, marginHorizontal:5 }}
@@ -231,26 +231,16 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
           </Header>
           <View padder >
             <View style={{ height: '15%' }}>
-            <H1>{curSession ? curSession.title : ""}</H1>
-            <Text note>{curSession ? "by " + curSession.owner.spotifyDisplayName : ""}</Text>
+            {curSession ? <H1>{curSession.title}</H1> : <Spinner color={'black'}></Spinner>}
+            <Text note>{curSession ? "by " + curSession.owner.spotifyDisplayName : "..."}</Text>
               <View style={{ flexDirection: 'row' }}>
                 <Button style={{ marginVertical: 10, width: '45%' }} onPress={() => this.setState({ sharingVisible: true })}>
                   <Text>Share</Text>
                   <Icon name='share' type='MaterialCommunityIcons'></Icon>
                 </Button>
-                {/* {
-                  adminMode ?
-                    <Button style={{ marginVertical: 10, width: '45%', marginHorizontal: '5%' }}
-                      onPress={() => this.setState({editVisible: true})}
-                    >
-                      <Text>Edit</Text>
-                      <Icon name='square-edit-outline' type='MaterialCommunityIcons'></Icon>
-                    </Button>
-                    : <React.Fragment></React.Fragment>
-                } */}
               </View>
             </View>
-            <ScrollView style={{ borderStyle: "solid", borderColor: 'blue', borderWidth: 2, height: '60%' , marginTop:5, padding:5}}>
+            <ScrollView style={{height:'65%',  marginTop:5, padding:5}}>
               <List>
                 {playlist.length > 0 ? playlist.map((song, index) => {
                   return <ListItem style={{ marginVertical: 3 }}
@@ -269,14 +259,10 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
                       <Text note numberOfLines={1} >{song.albumName}</Text>
                     </Body>
                   </ListItem>
-                }) : <ListItem>
-                  <Body>
-                      <Text numberOfLines={1} >No Songs added yet</Text>
-                    </Body>
-                  </ListItem>}
+                }) : <React.Fragment></React.Fragment>}
               </List>
             </ScrollView>
-            <View style={{ height: '25%' ,flexDirection: 'row'}} padder >
+            <View style={{ height: '15%' ,flexDirection: 'row'}} padder >
               <Button onPress={() => this.setState({ songAddingActive: true }) } style={{ marginRight: '5%', marginVertical: 5 , width: '45%'}}>
                 <Text>Add a Song</Text>
               </Button>

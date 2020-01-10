@@ -113,11 +113,11 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
               To continue please login to your Spotify Account first.
               </H3>
             <Form style={{ marginVertical: 10 }}>
-              <Button block={true} style={{ marginVertical: 10, backgroundColor: 'black' }} disabled={!loginUrl}
+              <Button block={true} style={{ marginVertical: 10 }} disabled={!loginUrl}
                 onPress={() => { Linking.openURL(loginUrl) }}
               >
-                {loginUrl ? <React.Fragment /> : <Spinner />}
-                <Text style={{ color: 'lightgreen' }}>Login</Text>
+                {loginUrl ? <React.Fragment /> : <Spinner color={'black'} />}
+                <Text>Login</Text>
               </Button>
             </Form>
           </Content>
@@ -165,7 +165,6 @@ export class CreateScreen extends React.Component<CreateScreenProps, CreateScree
                   {joinId ? <Text>Apply the changes</Text> : <Text>Let the Session start</Text> }
                 </Button>
               </Form>
-              <AccountOptions sessionId={this.state.sessionId} onOpenSession={(joinId) =>{ this.setState({ sessionVisible: true, newJoinId: joinId });}} onLogout={() => {this.setState({ loginRequired: true,loginUrl: undefined }); this.checkUserLoginStatus();}}></AccountOptions>
             </View>
           </Content>
         </Container>

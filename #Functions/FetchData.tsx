@@ -14,8 +14,10 @@ export async function fetchFromBase(url,expectedResponses){
         console.log("fetchFromBase failed for query - " + baseUrl + url + " - : " + error);
         noServerConnection();
         return;
-      }
+      } 
       const responseStatus = response.status;
+      console.log(responseStatus)
+      console.log("fetchFromBase for query - " + baseUrl + url);;
       const responseJson = await response.json();
       if(responseStatus  >= 200 && responseStatus < 300 || expectedResponses.indexOf(responseStatus) != -1){
         return responseJson;
@@ -46,7 +48,7 @@ export async function fetchFromBaseWithBody (url, method, bodyParams){
     const responseJson = await  response.json();
     return responseJson;
   }else if (responseStatus == 204){
-    return undefined;
+    return;
   }else {
     const responseJson = await  response.json();
     throw new Error (responseJson.message);

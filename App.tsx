@@ -3,11 +3,13 @@ import { SessionScreen } from './#Screens/SessionScreen';
 import { CreateScreen } from './#Screens/CreateScreen';
 import { AccountOptions } from './#Components/AccountOptions';
 import { Image } from 'react-native-elements';
-import { Container, Header, Title, Label, Content, Input, Form, Item, View, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Toast, H3 } from 'native-base';
+import { Container, Header,StyleProvider , Title, Label, Content, Input, Form, Item, View, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Toast, H3 } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 import { checkLoginStatus, noServerConnection, fetchFromBaseWithBody, fetchFromBase } from './#Functions/FetchData';
+import { ThemeExample } from './#Functions/Test';
 import { Linking } from 'react-native';
-
+import getTheme from './native-base-theme/components';
+import commonColor from './native-base-theme/variables/commonColor';
 
 interface Props { }
 
@@ -55,7 +57,6 @@ export default class App extends React.Component<Props, State> {
       console.log("joinId:" + joinId);
       this.checkJoinId(joinId);
     }
-    // do something with the url, in our case navigate(route)
   }
 
   joinIdChange(newjoinId){
@@ -77,6 +78,8 @@ export default class App extends React.Component<Props, State> {
         } else {
           this.setState({ loggedIn: false });
         }
+      } else {
+        this.setState({ loggedIn: false });
       }
     } catch (error) {
       console.log("checkUserLoginState failed: " + error);
@@ -108,31 +111,39 @@ export default class App extends React.Component<Props, State> {
     const { sessionVisible, joinId, createVisible, loggedIn,sessionVisibleAdmin } = this.state;
     if (sessionVisible) {
       return (
+        <StyleProvider style={getTheme(commonColor)}>
         <Root>
           <SessionScreen
             joinId={joinId}
             onRequestClose={() => { this.setState({ sessionVisible: false, joinId: "" }); this.checkUserLoginState(); }}
             adminMode={false} />
         </Root>
+        </StyleProvider>
       )
     }else if(sessionVisibleAdmin){
-      <Root>
+      return (
+        <StyleProvider style={getTheme(commonColor)}>
+          <Root>
           <SessionScreen
             joinId={joinId}
             onRequestClose={() => { this.setState({ sessionVisibleAdmin: false, joinId: "" }); this.checkUserLoginState(); }}
             adminMode={true} />
         </Root>
+        </StyleProvider>)
     } else if (createVisible) {
       return (
+        <StyleProvider style={getTheme(commonColor)}>
         <Root><CreateScreen
           onRequestClose={() => { this.setState({ createVisible: false }); this.checkUserLoginState(); }}
           joinId={undefined}
         />
         </Root>
+        </StyleProvider>
       )
     }
     else {
       return (
+        <StyleProvider style={getTheme(commonColor)}>
         <Root>
           <Container>
             <Header>
@@ -177,7 +188,9 @@ export default class App extends React.Component<Props, State> {
               </View>
             </Content>
           </Container>
-        </Root>)
+        </Root>
+        </StyleProvider>
+        )
     }
   }
 }

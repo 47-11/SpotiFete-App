@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Container, Item, Label, Input, Toast, Header, Title, Form, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, Root, Spinner, H1, Picker, H3, List, ListItem, H2 } from 'native-base';
 import { Image } from 'react-native-elements';
-import { Linking, Clipboard } from 'react-native';
+import {  Clipboard,Linking } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 interface ShareScreenProps {
@@ -18,15 +18,15 @@ export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenSt
     super(props);
 
     this.state = {
-      stringToCopy: this.props.joinId,
+      stringToCopy: undefined,
       partyName: 'Micheal Jackson Party'
     }
   }
 
-  async writeToClipboard() {
-    await Clipboard.setString(this.state.stringToCopy);
+  async writeToClipboard(toCopy) {
+    await Clipboard.setString(toCopy);
     Toast.show({
-      text: 'Copied to Clipboard!',
+      text: `Copied to Clipboard! (${toCopy})`,
       buttonText: 'Okay',
       duration: 3000
     })
@@ -35,7 +35,7 @@ export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenSt
   render() {
     const { onRequestClose, joinId } = this.props;
     const { partyName } = this.state;
-    const link = `spotifete:\\\\fete\\${joinId}`;
+    const link = `spotifete://session/${joinId}`;
     return (
       <Container>
         <Header>
@@ -61,21 +61,32 @@ export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenSt
           <H3 style={{ marginHorizontal: 10, textAlign: "center" }}>
             Share your Session Id!
           </H3>
-          <View style={{alignItems:'center',padding:10, borderWidth:2, margin:5}}>
+          <View style={{ alignItems: 'center', padding: 10, borderWidth: 2, margin: 5 }}>
             <QRCode
               value={link}
               size={300}
             />
           </View>
           <List style={{ marginVertical: 20 }}>
-            <ListItem icon style={{ borderWidth: 1, borderColor: '#8600b3', paddingLeft: 10 }}>
-              <Left><Text style={{ padding: 10 }}>Id:</Text></Left>
+            <ListItem thumbnail >
+              <Left> 
+                <Button onPress={() => { this.writeToClipboard(joinId) }}>
+                  <Icon name='clipboard-text' type='MaterialCommunityIcons' />
+              </Button></Left>
               <Body>
-                <Text style={{ backgroundColor: "#8600b3", padding: 9, color: 'lightgrey' }}>{joinId}</Text>
+                <Text>Copy the Session Id</Text>
+                <Text note>{joinId}</Text>
               </Body>
-              <Right>
-                <Icon style={{ color: "#8600b3" }} name='clipboard-text' type='MaterialCommunityIcons' onPress={() => { this.writeToClipboard() }} />
-              </Right>
+            </ListItem>
+            <ListItem thumbnail >
+              <Left> 
+                <Button onPress={() => {this.writeToClipboard(link); Linking.openURL(link);}}>
+                  <Icon name='clipboard-text' type='MaterialCommunityIcons' />
+              </Button></Left>
+              <Body>
+                <Text>Copy the App-Link</Text>
+                <Text note>{link}</Text>
+              </Body>
             </ListItem>
           </List>
         </Content>
