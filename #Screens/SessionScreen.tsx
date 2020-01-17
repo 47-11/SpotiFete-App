@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Image } from 'react-native-elements';
 import { View, Container, Header, Title, Subtitle, Content, Footer, FooterTab, Button, Left, Right, Body, Icon, Text, List, ListItem, H1, Label, Input, Item, Form, Thumbnail, Toast, Spinner } from 'native-base';
-import { ScrollView, Linking } from 'react-native';
+import { ScrollView, Linking, AsyncStorage, Alert } from 'react-native';
 import { ShareScreen } from './ShareScreen';
 import { fetchFromBase, fetchFromBaseWithBody, timeout, noServerConnection } from '../#Functions/FetchData';
 import { song, searchResponse, session, spotifyUser } from '../#Components/responseInterfaces';
@@ -98,6 +98,40 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
       })
     }
 
+  }
+
+  async confirmDeletion(){
+    Alert.alert(
+      'Confirm',
+      'You are about to delete this Session. Are you sure?',
+      [
+       
+        {
+          text: 'No I\'m not sure',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Yes! Trash it.', onPress: () => this.deleteSession()},
+      ],
+      {cancelable: false},
+    );
+  }
+
+  async deleteSession(){
+    const curJoinId = this.props.joinId;
+    const loginSessionId = await AsyncStorage.getItem('sessionId');
+    
+    if(loginSessionId){
+      try {
+        console.log("deleteSession: " + `/sessions/${curJoinId} DELETE: loginSessionId:` + loginSessionId);
+        await fetchFromBaseWithBody(`/sessions/${curJoinId}`, 'DELETE', { loginSessionId: loginSessionId });
+        this.props.onRequestClose();
+      } catch (error) {
+        console.log("deleteSession ERROR: " + error);
+      }
+    } else {
+      console.log("no Id stored" );
+    }
   }
 
   async addSong(trackId) {
@@ -230,14 +264,22 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
             </Right>
           </Header>
           <View padder >
-            <View style={{ height: '15%' }}>
-            {curSession ? <H1>{curSession.title}</H1> : <Spinner color={'black'}></Spinner>}
+            <View style={{ height: '15%',margin: 20 }}>
+            {curSession ? <H1 numberOfLines={2}>{curSession.title}</H1> : <Spinner color={'black'}></Spinner>}
             <Text note>{curSession ? "by " + curSession.owner.spotifyDisplayName : "..."}</Text>
               <View style={{ flexDirection: 'row' }}>
-                <Button style={{ marginVertical: 10, width: '45%' }} onPress={() => this.setState({ sharingVisible: true })}>
+                <Button style={{ marginVertical: 5, width: '45%', marginRight: '5%' }} onPress={() => this.setState({ sharingVisible: true })}>
                   <Text>Share</Text>
                   <Icon name='share' type='MaterialCommunityIcons'></Icon>
                 </Button>
+                {
+                  adminMode ?
+                <Button style={{ marginVertical: 5, width: '50%' }} onPress={() => this.confirmDeletion()}>
+                  <Text>Delete</Text>
+                  <Icon name='trash-can-outline' type='MaterialCommunityIcons'></Icon>
+                </Button>
+                : <React.Fragment/>
+                }
               </View>
             </View>
             <ScrollView style={{height:'65%',  marginTop:5, padding:5}}>
