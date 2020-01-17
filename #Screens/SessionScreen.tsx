@@ -304,7 +304,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
                 }) : <React.Fragment></React.Fragment>}
               </List>
             </ScrollView>
-            <View style={{ height: '15%' ,flexDirection: 'row'}} padder >
+            <View style={{ height: '20%' ,flexDirection: 'row', marginBottom: '20%'}} padder >
               <Button onPress={() => this.setState({ songAddingActive: true }) } style={{ marginRight: '5%', marginVertical: 5 , width: '45%'}}>
                 <Text>Add a Song</Text>
               </Button>
