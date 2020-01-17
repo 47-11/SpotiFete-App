@@ -180,11 +180,11 @@ export default class App extends React.Component<Props, State> {
                   </Button>
                   <Button block={true} style={{ marginVertical: 10 }}
                     onPress={() => this.setState({ createVisible: true })}>
-                    <Text>Start Session</Text>
+                    <Text>Start Session / Login</Text>
                   </Button>
                 </Form>
 
-                {loggedIn ? <AccountOptions onOpenSession={(joinId) => {this.setState({joinId:joinId, sessionVisibleAdmin: true})}} sessionId={this.state.sessionId} onLogout={() => this.checkUserLoginState()}></AccountOptions> : <Text>You are currently not logged in.</Text>}
+                {loggedIn ? <AccountOptions onOpenSession={(joinId) => {this.setState({joinId:joinId, sessionVisibleAdmin: true})}} sessionId={this.state.sessionId} onLogout={() => this.checkUserLoginState()}></AccountOptions> : <Text>You are currently not logged in. To see all your Sessions here please do so.</Text>}
               </View>
             </Content>
           </Container>
