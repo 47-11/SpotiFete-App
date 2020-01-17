@@ -206,7 +206,7 @@ export class SessionScreen extends React.PureComponent<SessionScreenProps, Sessi
       );
     }
     else if (sharingVisible) {
-      return (<ShareScreen onRequestClose={() => { this.setState({ sharingVisible: false }); }} joinId={joinId}></ShareScreen>);
+      return (<ShareScreen onRequestClose={() => { this.setState({ sharingVisible: false }); }} joinId={joinId} sessionName={curSession.title}></ShareScreen>);
     } else if (editVisible) {
       return(<CreateScreen joinId={joinId} onRequestClose={() => { this.setState({ editVisible: false }); }}></CreateScreen>)
     }

@@ -7,10 +7,10 @@ import QRCode from 'react-native-qrcode-svg';
 interface ShareScreenProps {
   onRequestClose(): void;
   joinId: string;
+  sessionName: string | undefined;
 }
 interface ShareScreenState {
   stringToCopy: string | undefined;
-  partyName: string | undefined;
 }
 
 export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenState> {
@@ -18,8 +18,7 @@ export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenSt
     super(props);
 
     this.state = {
-      stringToCopy: undefined,
-      partyName: 'Micheal Jackson Party'
+      stringToCopy: undefined
     }
   }
 
@@ -33,8 +32,7 @@ export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenSt
   }
 
   render() {
-    const { onRequestClose, joinId } = this.props;
-    const { partyName } = this.state;
+    const { onRequestClose, joinId ,sessionName} = this.props;
     const link = `spotifete://session/${joinId}`;
     return (
       <Container>
@@ -55,9 +53,9 @@ export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenSt
           </Right>
         </Header>
         <Content padder>
-          {partyName ? <H2 style={{ margin: 10, textAlign: "center" }}>
-            {partyName}
-          </H2> : <Text>No name Session</Text>}
+          {sessionName ? <H2 style={{ margin: 10, textAlign: "center" }}>
+            {sessionName}
+          </H2> : <React.Fragment/>}
           <H3 style={{ marginHorizontal: 10, textAlign: "center" }}>
             Share your Session Id!
           </H3>
@@ -80,7 +78,7 @@ export class ShareScreen extends React.Component<ShareScreenProps, ShareScreenSt
             </ListItem>
             <ListItem thumbnail >
               <Left> 
-                <Button onPress={() => {this.writeToClipboard(link); Linking.openURL(link);}}>
+                <Button onPress={() => {this.writeToClipboard(link);}}>
                   <Icon name='clipboard-text' type='MaterialCommunityIcons' />
               </Button></Left>
               <Body>
